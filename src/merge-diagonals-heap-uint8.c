@@ -272,7 +272,9 @@ make_univdiagonals_heap (List_T *free_list, Mergeinfo_uint8_T mergeinfo,
     copy = (Univcoord_T *) MALLOC((nelts+1)*sizeof(Univcoord_T));
     *free_list = List_push(*free_list,(void *) copy);
 
-    memcpy(copy,stream,nelts*sizeof(Univcoord_T));
+    if (nelts > 0) {
+      memcpy(copy,stream,nelts*sizeof(Univcoord_T));
+    }
     copy[nelts] = (Univcoord_T) -1;	/* sentinel */
     
     min_heap_insert(heap,heapi,copy);
@@ -356,4 +358,3 @@ Merge_diagonals_uint8 (int *nelts, Univcoord_T **stream_array, int *streamsize_a
   }
 }
 #endif
-

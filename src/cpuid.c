@@ -133,9 +133,9 @@ CPUID_support (bool *arm_support_p,
   uint32_t avx2_bmi12_mask = ((1 << 5) | (1 << 3) | (1 << 8)); /* ebx */
   uint32_t lzcnt_mask = (1 << 5); /* ecx */
 
-  uint32_t osxsave_mask = (1 << 27); /* ecx */
-  uint32_t avx512_mask = ((1 << 16) | (1 << 28));  /* ebx */
-  uint32_t avx512bw_vl_mask = ((1 << 30) | (1 << 31));  /* ebx */
+  uint32_t osxsave_mask = (1U << 27); /* ecx */
+  uint32_t avx512_mask = ((1U << 16) | (1U << 28));  /* ebx */
+  uint32_t avx512bw_vl_mask = ((1U << 30) | (1U << 31));  /* ebx */
 
 
   *arm_support_p = false;

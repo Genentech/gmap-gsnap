@@ -1914,6 +1914,10 @@ read_intervals (size_t offset, size_t filesize, FILE *fp, char *filename, T new,
 static char *
 load_words (char *memory, T new) {
   off_t stringlen;
+#ifdef HAVE_64_BIT
+  UINT8 label_length8;
+#endif
+  UINT4 label_length;
 #ifdef DEBUG
   int i;
 #endif
@@ -3095,6 +3099,7 @@ IIT_read (char *filename, char *name, bool readonlyp, Divread_T divread, char *d
     /* Need to use Univ_IIT_read instead */
     fprintf(stderr,"Unexpected error in IIT_read of %s.  First int is %d.  Using IIT_read code on a version 1 IIT\n",
 	    filename,new->total_nintervals);
+    fprintf(stderr,"If this is a map IIT file, then the coordinates need to have chromosomes, and not be universal coordinates\n");
     abort();
 
   } else {

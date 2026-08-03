@@ -240,7 +240,7 @@ Select64_ones_next (T this, const uint64_t rank, uint64_t *const next) {
   const uint64_t s = Select64_ones_select(this,rank);
   int curr = s / 64;
 
-  uint64_t window = this->bits[curr] & -1ULL << s;
+  uint64_t window = this->bits[curr] & (~0ULL << (s % 64));
   window &= window - 1;
 
   while (window == 0) {

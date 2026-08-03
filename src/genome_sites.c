@@ -412,7 +412,7 @@ novel_splicesites (Univcoord_T left, int pos5, int pos3,
 #else      
       debug2(printf("found is %08X, -found & found is %08X\n",found,-found & found));
       pos = offset + mod_37_bit_position[(lowbit = -found & found) % 37];
-      sites = Intlistpool_push(sites,pos
+      sites = Intlistpool_push(sites,intlistpool,pos
 			       intlistpool_trace(__FILE__,__LINE__));
       found -= lowbit;
 #endif

@@ -178,12 +178,15 @@ make_diagonals_heap (Mergeinfo_uint8_T mergeinfo,
   heapi = heapsize;
   /* Handle individual contents: Start with i value from before */
   while (i < nstreams) {
-    n = nelts[heapi] = streamsize_array[order[i]];
-    
-    /* Copy to make the merging process non-destructive */
-    _heap[heapi] = (UINT8 *) MALLOC_ALIGN(n*sizeof(UINT8));
-    out = _heap[heapi];
-    CHECK_ALIGN(_heap[heapi]);
+    if ((n = nelts[heapi] = streamsize_array[order[i]]) == 0) {
+      _heap[heapi] = (UINT8 *) NULL;
+      
+    } else {
+      /* Copy to make the merging process non-destructive */
+      _heap[heapi] = (UINT8 *) MALLOC_ALIGN(n*sizeof(UINT8));
+      out = _heap[heapi];
+      CHECK_ALIGN(_heap[heapi]);
+    }
 
     /* Combine stream_high and stream_low and add diagterm (Could use SIMD here) */
     diagterm = (UINT8) diagterm_array[order[i]];
@@ -379,7 +382,9 @@ make_univdiagonals_heap (Mergeinfo_uint8_T mergeinfo, Univcoord_T **stream_array
       out = _combined[ncombined];
       for (k = i; k < j; k++) {
 	n = streamsize_array[order[k]];
-	memcpy(out,stream_array[order[k]],n*sizeof(Univcoord_T));
+	if (n > 0) {
+	  memcpy(out,stream_array[order[k]],n*sizeof(Univcoord_T));
+	}
 	out += n;
       }
       Sedgesort_uint8(_combined[ncombined++],total);
@@ -396,14 +401,17 @@ make_univdiagonals_heap (Mergeinfo_uint8_T mergeinfo, Univcoord_T **stream_array
   heapi = heapsize;
   /* Handle individual contents: Start with i value from before */
   while (i < nstreams) {
-    n = nelts[heapi] = streamsize_array[order[i]];
-    
-    /* Copy to make the merging process non-destructive */
-    _heap[heapi] = (Univcoord_T *) MALLOC_ALIGN(n*sizeof(Univcoord_T));
-    out = _heap[heapi];
-    CHECK_ALIGN(_heap[heapi]);
-    memcpy(_heap[heapi],stream_array[order[i]],n*sizeof(Univcoord_T));
+    if ((n = nelts[heapi] = streamsize_array[order[i]]) == 0) {
+      _heap[heapi] = (Univcoord_T *) NULL;
 
+    } else {
+      /* Copy to make the merging process non-destructive */
+      _heap[heapi] = (Univcoord_T *) MALLOC_ALIGN(n*sizeof(Univcoord_T));
+      out = _heap[heapi];
+      CHECK_ALIGN(_heap[heapi]);
+      memcpy(_heap[heapi],stream_array[order[i]],n*sizeof(Univcoord_T));
+    }
+ 
 #ifdef DEBUG
     printf("Assigning node %d with %d elts:",heapi,nelts[heapi]);
     for (k = 0; k < nelts[heapi]; k++) {

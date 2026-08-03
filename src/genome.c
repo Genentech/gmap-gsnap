@@ -1,4 +1,3 @@
-static char rcsid[] = "$Id: ce81f2fe5aca13fd7d98e2b377ec849f0f501f76 $";
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -9737,7 +9736,7 @@ uncompress_one_char (Genomecomp_T *blocks, Univcoord_T pos, char flagchar, char 
   flags = blocks[ptr+2];
 #endif
 
-  if (flags & (1 << bit)) {
+  if (flags & (1U << bit)) {
     return flagchar;
 
   } else if (bit < 16) {

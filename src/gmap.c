@@ -638,7 +638,7 @@ static struct option long_options[] = {
   {"map", required_argument, 0, 'm'},	/* map_iitfile */
   {"mapexons", no_argument, 0, 'e'}, /* map_exons_p */
   {"mapboth", no_argument, 0, 'b'}, /* map_bothstrands_p */
-  {"nflanking", required_argument, 0, 'u'}, /* nflanking */
+  {"flanking", required_argument, 0, 'u'}, /* nflanking */
   {"print-comment", no_argument, 0, 0},	    /* print_comment_p */
 
   /* Alignment options */

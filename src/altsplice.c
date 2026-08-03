@@ -1236,7 +1236,7 @@ Altsplice_resolve_both (Univcoord_T *univdiagonal_L, int *splice_qpos_L, int *di
     } else {
       *medial_nmismatches_H = thisH->medial_nmismatches;
     }
-    if (thisL->distal_qpos[bestj] != thisH->splice_qpos) {
+    if (thisH->distal_qpos[bestj] != thisH->splice_qpos) {
       *distal_nmismatches_H = -1;
     } else {
       *distal_nmismatches_H = thisH->distal_nmismatches[bestj];

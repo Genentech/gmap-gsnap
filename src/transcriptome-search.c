@@ -1528,7 +1528,7 @@ Transcriptome_prevalent (Trnum_T **sense_trnums, Trcoord_T **sense_troffsets, Tr
     }
   }
 
-  return (*n_antisense_trdiagonals) + (*n_antisense_trdiagonals);
+  return (*n_sense_trdiagonals) + (*n_antisense_trdiagonals);
 }
 
 
@@ -1973,5 +1973,4 @@ Transcriptome_search_setup (int index1part_tr_in, int index1interval_tr_in,
 
   return;
 }
-
 

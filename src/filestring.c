@@ -271,7 +271,9 @@ transfer_string (T this, char *string, int stringlen) {
   if (stringlen > 0) {
     q = string;
     while (this->nleft <= stringlen) {
-      strncpy(this->ptr,q,this->nleft);
+      if (this->nleft > 0) {
+	strncpy(this->ptr,q,this->nleft);
+      }
       q += this->nleft;
       stringlen -= this->nleft;
     
@@ -315,8 +317,10 @@ transfer_string_reverse (T this, char *string, int stringlen) {
     q = &(string[stringlen]);
     while (this->nleft <= stringlen) {
       q -= this->nleft;
-      strncpy(this->ptr,q,this->nleft);
-      reverse_inplace(this->ptr,this->nleft);
+      if (this->nleft > 0) {
+	strncpy(this->ptr,q,this->nleft);
+	reverse_inplace(this->ptr,this->nleft);
+      }
       stringlen -= this->nleft;
     
       block = (char *) MALLOC_OUT(BLOCKSIZE * sizeof(char));
@@ -365,8 +369,10 @@ transfer_string_revcomp (T this, char *string, int stringlen) {
     q = &(string[stringlen]);
     while (this->nleft <= stringlen) {
       q -= this->nleft;
-      strncpy(this->ptr,q,this->nleft);
-      revcomp_inplace(this->ptr,this->nleft);
+      if (this->nleft > 0) {
+	strncpy(this->ptr,q,this->nleft);
+	revcomp_inplace(this->ptr,this->nleft);
+      }
       stringlen -= this->nleft;
     
       block = (char *) MALLOC_OUT(BLOCKSIZE * sizeof(char));
@@ -648,4 +654,3 @@ Filestring_merge (T dest, T source) {
 
   return;
 }
-

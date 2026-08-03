@@ -1,4 +1,3 @@
-static char rcsid[] = "$Id: 3ac24573cf9e567110ed6c1bdb527bfd2acce372 $";
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -5863,10 +5862,10 @@ Stage3_new (struct Pair_T *pairarray, List_T pairs, int npairs, int goodness, in
   } else {
     if (watsonp) {
       typematches = IIT_get_typed(&nmatches,altstrain_iit,/*divstring*/NULL,
-				  new->genomicstart,new->genomicend,straintype,/*sortp*/false);
+				  new->genomicstart+1U,new->genomicend+1U,straintype,/*sortp*/false);
     } else {
       typematches = IIT_get_typed(&nmatches,altstrain_iit,/*divstring*/NULL,
-				  new->genomicend,new->genomicstart,straintype,/*sortp*/false);
+				  new->genomicend+1U,new->genomicstart+1U,straintype,/*sortp*/false);
     }
     if (typematches == NULL) {
       Stage3_free(&new);
@@ -6644,18 +6643,18 @@ Stage3_print_mutations (Filestring_T fp, T this, T reference, Univ_IIT_T chromos
 
 
 static void
-print_map (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstable,
-	   Univ_IIT_T chromosome_iit, int pathnum, bool map_bothstrands_p,
-	   int nflanking, bool print_comment_p) {
+print_flanking (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstable,
+		Univ_IIT_T chromosome_iit, int pathnum, bool map_bothstrands_p,
+		int nflanking, bool print_comment_p) {
   int chrlow, chrhigh;
   Pair_T start, end;
   int chrpos1, chrpos2;
-  int *iit_matches = NULL, nmatches, *leftflanks, nleftflanks, *rightflanks, nrightflanks;
+  int *leftflanks, nleftflanks, *rightflanks, nrightflanks;
   int divno, sign;
   char *chr;
 
   if ((divno = map_divint_crosstable[this->chrnum]) <= 0) {
-    FPRINTF(fp,"  *Map hits for path %d (0):\n\n",pathnum);
+    FPRINTF(fp,"  Flanking hits for path %d (0|0):\n\n",pathnum);
     return;
   } else {
     chr = Chrnum_to_string(this->chrnum,chromosome_iit);
@@ -6675,63 +6674,93 @@ print_map (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstable,
     sign = -1;
   }
 
+  /* Need to add 1 to both coordinates because map information is 1-based, and coordinates are inclusive */
   if (map_bothstrands_p == true) {
-    iit_matches = IIT_get_with_divno(&nmatches,map_iit,divno,chrlow,chrhigh,/*sortp*/false);
-    if (nflanking > 0) {
-      IIT_get_flanking_with_divno(&leftflanks,&nleftflanks,&rightflanks,&nrightflanks,map_iit,
-				  divno,chrlow,chrhigh,nflanking,/*sign*/0);
-    }
-    if (nflanking > 0) {
-      FPRINTF(fp,"  Map hits for path %d (%d|%d|%d):\n",pathnum,nleftflanks,nmatches,nrightflanks);
-    } else {
-      FPRINTF(fp,"  Map hits for path %d (%d):\n",pathnum,nmatches);
-    }
-    if (nflanking > 0) {
-      IIT_print_header(fp,map_iit,leftflanks,nleftflanks,chr,
-		       /*reversep*/true,/*relativep*/false,/*left*/0U,print_comment_p);
-      FPRINTF(fp,"    ====================\n");
-    }
-    IIT_print_header(fp,map_iit,iit_matches,nmatches,chr,
+    IIT_get_flanking_with_divno(&leftflanks,&nleftflanks,&rightflanks,&nrightflanks,map_iit,
+				divno,chrlow+1U,chrhigh+1U,nflanking,/*sign*/0);
+    FPRINTF(fp,"  Flanking hits for path %d (%d|%d):\n",pathnum,nleftflanks,nrightflanks);
+    
+    IIT_print_header(fp,map_iit,leftflanks,nleftflanks,chr,
+		     /*reversep*/true,/*relativep*/false,/*left*/0U,print_comment_p);
+    FPRINTF(fp,"    ====================\n");
+    IIT_print_header(fp,map_iit,rightflanks,nrightflanks,chr,
 		     /*reversep*/false,/*relativep*/false,/*left*/0U,print_comment_p);
-    if (nflanking > 0) {
-      FPRINTF(fp,"    ====================\n");
-      IIT_print_header(fp,map_iit,rightflanks,nrightflanks,chr,
-		       /*reversep*/false,/*relativep*/false,/*left*/0U,print_comment_p);
-    }
-
-  } else {
-    iit_matches = IIT_get_signed_with_divno(&nmatches,map_iit,divno,chrlow,chrhigh,/*sortp*/true,sign);
-    if (nflanking > 0) {
-      IIT_get_flanking_with_divno(&leftflanks,&nleftflanks,&rightflanks,&nrightflanks,map_iit,
-				  divno,chrlow,chrhigh,nflanking,sign);
-    }
-    if (nflanking > 0) {
-      FPRINTF(fp,"  Map hits for path %d (%d|%d|%d):\n",pathnum,nleftflanks,nmatches,nrightflanks);
-    } else {
-      FPRINTF(fp,"  Map hits for path %d (%d):\n",pathnum,nmatches);
-    }
-    if (nflanking > 0) {
-      IIT_print_header(fp,map_iit,leftflanks,nleftflanks,chr,
-		       /*reversep*/true,/*relativep*/false,/*left*/0U,print_comment_p);
-      FPRINTF(fp,"    ====================\n");
-    }
-    IIT_print_header(fp,map_iit,iit_matches,nmatches,chr,
-		     /*reversep*/false,/*relativep*/false,/*left*/0U,print_comment_p);
-    if (nflanking > 0) {
-      FPRINTF(fp,"    ====================\n");
-      IIT_print_header(fp,map_iit,rightflanks,nrightflanks,chr,
-		       /*reversep*/false,/*relativep*/false,/*left*/0U,print_comment_p);
-    }
-  }
-  FPRINTF(fp,"\n");
-
-  if (nflanking > 0) {
     FREE(rightflanks);
     FREE(leftflanks);
+
+  } else {
+    IIT_get_flanking_with_divno(&leftflanks,&nleftflanks,&rightflanks,&nrightflanks,map_iit,
+				divno,chrlow+1U,chrhigh+1U,nflanking,sign);
+    FPRINTF(fp,"  Flanking hits for path %d (%d|%d):\n",pathnum,nleftflanks,nrightflanks);
+    IIT_print_header(fp,map_iit,leftflanks,nleftflanks,chr,
+		     /*reversep*/true,/*relativep*/false,/*left*/0U,print_comment_p);
+    FPRINTF(fp,"    ====================\n");
+    IIT_print_header(fp,map_iit,rightflanks,nrightflanks,chr,
+		     /*reversep*/false,/*relativep*/false,/*left*/0U,print_comment_p);
   }
+
+  FPRINTF(fp,"\n");
+
+  FREE(rightflanks);
+  FREE(leftflanks);
+
+  FREE(chr);
+
+  return;
+}
+
+static void
+print_map (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstable,
+	   Univ_IIT_T chromosome_iit, int pathnum, bool map_bothstrands_p,
+	   bool print_comment_p) {
+  int chrlow, chrhigh;
+  Pair_T start, end;
+  int chrpos1, chrpos2;
+  int *iit_matches = NULL, nmatches, *leftflanks, nleftflanks, *rightflanks, nrightflanks;
+  int divno, sign;
+  char *chr;
+
+  if ((divno = map_divint_crosstable[this->chrnum]) <= 0) {
+    FPRINTF(fp,"  Map hits for path %d (0):\n\n",pathnum);
+    return;
+  } else {
+    chr = Chrnum_to_string(this->chrnum,chromosome_iit);
+  }
+
+  start = &(this->pairarray[0]);
+  end = &(this->pairarray[this->npairs-1]);
+
+  if (this->watsonp) {
+    chrlow = chrpos1 = Pair_genomepos(start);
+    chrhigh = chrpos2 = Pair_genomepos(end);
+    sign = +1;
+
+  } else {
+    chrhigh = chrpos1 = Pair_genomepos(start);
+    chrlow = chrpos2 = Pair_genomepos(end);
+    sign = -1;
+  }
+
+  /* Need to add 1 to both coordinates because map information is 1-based, and coordinates are inclusive */
+  if (map_bothstrands_p == true) {
+    iit_matches = IIT_get_with_divno(&nmatches,map_iit,divno,chrlow+1U,chrhigh+1U,/*sortp*/false);
+    FPRINTF(fp,"  Map hits for path %d (%d):\n",pathnum,nmatches);
+
+    IIT_print_header(fp,map_iit,iit_matches,nmatches,chr,
+		     /*reversep*/false,/*relativep*/false,/*left*/0U,print_comment_p);
+
+  } else {
+    iit_matches = IIT_get_signed_with_divno(&nmatches,map_iit,divno,chrlow+1U,chrhigh+1U,/*sortp*/true,sign);
+    FPRINTF(fp,"  Map hits for path %d (%d):\n",pathnum,nmatches);
+    IIT_print_header(fp,map_iit,iit_matches,nmatches,chr,
+		     /*reversep*/false,/*relativep*/false,/*left*/0U,print_comment_p);
+  }
+
+  FPRINTF(fp,"\n");
 
   FREE(iit_matches);
   FREE(chr);
+
   return;
 }
 
@@ -6747,7 +6776,7 @@ print_exon_map (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstab
   char *chr;
 
   if ((divno = map_divint_crosstable[this->chrnum]) <= 0) {
-    FPRINTF(fp,"  *Map hits for path %d (0):\n\n",pathnum);
+    FPRINTF(fp,"  Map hits for path %d (0):\n\n",pathnum);
     return;
   } else {
     chr = Chrnum_to_string(this->chrnum,chromosome_iit);
@@ -6759,11 +6788,12 @@ print_exon_map (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstab
     exonbounds = Uintlist_pop(exonbounds,&position1);
     exonbounds = Uintlist_pop(exonbounds,&position2);
 
+    /* Need to add 1 to both positions, because map information is 1-based, and exonbounds are inclusive */
     if (map_bothstrands_p == true) {
       if (position1 < position2) {
-	iit_matches = IIT_get(&nmatches,map_iit,chr,position1,position2,/*sortp*/true);
+	iit_matches = IIT_get(&nmatches,map_iit,chr,position1+1U,position2+1U,/*sortp*/true);
       } else {
-	iit_matches = IIT_get(&nmatches,map_iit,chr,position2,position1,/*sortp*/true);
+	iit_matches = IIT_get(&nmatches,map_iit,chr,position2+1U,position1+1U,/*sortp*/true);
       }
       FPRINTF(fp,"  Map hits for path %d, exon %d (%d):\n",pathnum,++exonno,nmatches);
       IIT_print_header(fp,map_iit,iit_matches,nmatches,chr,
@@ -6771,10 +6801,10 @@ print_exon_map (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstab
 
     } else {
       if (position1 < position2) {
-	iit_matches = IIT_get_signed_with_divno(&nmatches,map_iit,divno,position1,position2,
+	iit_matches = IIT_get_signed_with_divno(&nmatches,map_iit,divno,position1+1U,position2+1U,
 						/*sortp*/true,/*sign*/+1);
       } else {
-	iit_matches = IIT_get_signed_with_divno(&nmatches,map_iit,divno,position2,position1,
+	iit_matches = IIT_get_signed_with_divno(&nmatches,map_iit,divno,position2+1U,position1+1U,
 						/*sortp*/true,/*sign*/-1);
       }
       FPRINTF(fp,"  Map hits for path %d, exon %d (%d):\n",pathnum,++exonno,nmatches);
@@ -6792,12 +6822,18 @@ void
 Stage3_print_map (Filestring_T fp, T this, IIT_T map_iit, int *map_divint_crosstable, Univ_IIT_T chromosome_iit,
 		  int pathnum, bool map_exons_p, bool map_bothstrands_p, int nflanking,
 		  bool print_comment_p) {
+
+  if (nflanking > 0) {
+    print_flanking(fp,this,map_iit,map_divint_crosstable,
+		   chromosome_iit,pathnum,map_bothstrands_p,nflanking,print_comment_p);
+  }
+
   if (map_exons_p == true) {
     print_exon_map(fp,this,map_iit,map_divint_crosstable,
 		   chromosome_iit,pathnum,map_bothstrands_p,print_comment_p);
   } else {
     print_map(fp,this,map_iit,map_divint_crosstable,
-	      chromosome_iit,pathnum,map_bothstrands_p,nflanking,print_comment_p);
+	      chromosome_iit,pathnum,map_bothstrands_p,print_comment_p);
   }
   return;
 }

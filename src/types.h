@@ -1,4 +1,3 @@
-/* $Id: 25cb1933e63f066aefba6b1292d611700d1d2c3d $ */
 #ifndef TYPES_INCLUDED
 #define TYPES_INCLUDED
 #ifdef HAVE_CONFIG_H
@@ -39,6 +38,7 @@ typedef UINT4 Localspace_T;
 #define MAXIMUM_KMER 18
 typedef uint64_t UINT8;
 typedef uint64_t Oligospace_T;
+typedef uint64_t Signature_T;
 
 /*               8765432187654321 */
 #define LEFT_A 0x0000000000000000
@@ -56,6 +56,7 @@ typedef uint64_t Oligospace_T;
 #define MAXIMUM_KMER 15
 #define OLIGOSPACE_NOT_LONG
 typedef uint32_t Oligospace_T;
+typedef uint32_t Signature_T; /* But have to check that (index1part - msize + 1) < 2^(32 - 2*index1part) */
 
 /*               87654321 */
 #define LEFT_A 0x00000000

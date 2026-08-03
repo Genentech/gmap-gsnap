@@ -161,7 +161,9 @@ make_diagonals_heap (Mergeinfo_uint4_T mergeinfo, UINT4 **stream_array,
 			 out,out,__FILE__,__LINE__));
       for (k = i; k < j; k++) {
 	n = streamsize_array[order[k]];
-	memcpy(out,stream_array[order[k]],n*sizeof(UINT4));
+	if (n > 0) {
+	  memcpy(out,stream_array[order[k]],n*sizeof(UINT4));
+	}
 
 	/* Add diagterm (Could use SIMD here) */
 	diagterm = (UINT4) diagterm_array[order[k]];
@@ -388,7 +390,9 @@ make_univdiagonals_heap (Mergeinfo_uint4_T mergeinfo, UINT4 **stream_array,
 			 out,out,__FILE__,__LINE__));
       for (k = i; k < j; k++) {
 	n = streamsize_array[order[k]];
-	memcpy(out,stream_array[order[k]],n*sizeof(UINT4));
+	if (n > 0) {
+	  memcpy(out,stream_array[order[k]],n*sizeof(UINT4));
+	}
 	out += n;
       }
       Sedgesort_uint4(_combined[ncombined++],total);
@@ -554,5 +558,4 @@ Merge_diagonals_uint4 (int *nelts1, UINT4 **stream_array, int *streamsize_array,
   return _result;
 }
 #endif
-
 
