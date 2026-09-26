@@ -116,7 +116,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/src/config.h
-CONFIG_CLEAN_FILES = align.test coords1.test setup1.test iit.test
+CONFIG_CLEAN_FILES = align.test coords1.test setup1.test iit.test \
+	merge_local_null.test
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -343,7 +344,8 @@ am__set_b = \
   esac
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/align.test.in \
 	$(srcdir)/coords1.test.in $(srcdir)/iit.test.in \
-	$(srcdir)/setup1.test.in $(top_srcdir)/config/test-driver
+	$(srcdir)/merge_local_null.test.in $(srcdir)/setup1.test.in \
+	$(top_srcdir)/config/test-driver
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
@@ -469,16 +471,18 @@ EXTRA_DIST = defs ss.chr17test ss.her2 \
              align.test.ok coords1.test.ok \
              setup.genomecomp.ok setup.ref123positions.ok \
              map.test.ok \
-             fa.iittest iittest.iit.ok iit_get.out.ok
+             fa.iittest iittest.iit.ok iit_get.out.ok \
+             ss.ncslice ss.tandem_repeat
 
 CLEANFILES = align.test.out \
              coords.chr17test \
              gmap_setup gmapindex chr17test/chr17test.* Makefile.chr17test \
              map.test.out \
-             iittest.iit iit_get.out iit_dump.out
+             iittest.iit iit_get.out iit_dump.out \
+             ncslice/ncslice.* merge_local_null.test.out merge_local_null.test.err
 
-@MAINTAINER_FALSE@TESTS = align.test coords1.test setup1.test iit.test 
-@MAINTAINER_TRUE@TESTS = align.test coords1.test setup1.test iit.test \
+@MAINTAINER_FALSE@TESTS = align.test coords1.test setup1.test iit.test merge_local_null.test
+@MAINTAINER_TRUE@TESTS = align.test coords1.test setup1.test iit.test merge_local_null.test \
 @MAINTAINER_TRUE@        bioinfo.splicing.test
 
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir)
@@ -523,6 +527,8 @@ coords1.test: $(top_builddir)/config.status $(srcdir)/coords1.test.in
 setup1.test: $(top_builddir)/config.status $(srcdir)/setup1.test.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 iit.test: $(top_builddir)/config.status $(srcdir)/iit.test.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+merge_local_null.test: $(top_builddir)/config.status $(srcdir)/merge_local_null.test.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 tags TAGS:
 

@@ -577,6 +577,7 @@ AC_CONFIG_FILES([tests/align.test],[chmod +x tests/align.test])
 AC_CONFIG_FILES([tests/coords1.test],[chmod +x tests/coords1.test])
 AC_CONFIG_FILES([tests/setup1.test],[chmod +x tests/setup1.test])
 AC_CONFIG_FILES([tests/iit.test],[chmod +x tests/iit.test])
+AC_CONFIG_FILES([tests/merge_local_null.test],[chmod +x tests/merge_local_null.test])
 
 AC_OUTPUT
 

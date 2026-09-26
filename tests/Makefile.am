@@ -4,19 +4,21 @@ EXTRA_DIST = defs ss.chr17test ss.her2 \
              align.test.ok coords1.test.ok \
              setup.genomecomp.ok setup.ref123positions.ok \
              map.test.ok \
-             fa.iittest iittest.iit.ok iit_get.out.ok
+             fa.iittest iittest.iit.ok iit_get.out.ok \
+             ss.ncslice ss.tandem_repeat
 
 CLEANFILES = align.test.out \
              coords.chr17test \
              gmap_setup gmapindex chr17test/chr17test.* Makefile.chr17test \
              map.test.out \
-             iittest.iit iit_get.out iit_dump.out
+             iittest.iit iit_get.out iit_dump.out \
+             ncslice/ncslice.* merge_local_null.test.out merge_local_null.test.err
 
 if MAINTAINER
-TESTS = align.test coords1.test setup1.test iit.test \
+TESTS = align.test coords1.test setup1.test iit.test merge_local_null.test \
         bioinfo.splicing.test
 else
-TESTS = align.test coords1.test setup1.test iit.test 
+TESTS = align.test coords1.test setup1.test iit.test merge_local_null.test
 endif
 
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir)

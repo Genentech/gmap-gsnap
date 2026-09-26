@@ -17223,6 +17223,14 @@ Stage3_merge_chimera (T *new_left, T *new_right, T old_left, T old_right,
 				       /*query_subseq_offset*/Sequence_subseq_offset(queryseq),
 				       old_right->chrnum,old_right->chroffset,old_right->chrhigh,old_right->chrlength);
 
+    if (*new_left == NULL || *new_right == NULL) {
+      /* Stage3_new returns NULL if it cannot compute a valid cigar */
+      Stage3_free(&(*new_left));
+      Stage3_free(&(*new_right));
+      *new_left = *new_right = (T) NULL;
+      return false;
+    }
+
     path = List_reverse((*new_left)->pairs);
 
     /* To avoid indels at chimeric join, need to peelback, clean ends, extend with nogaps, and then re-clip*/
@@ -18158,6 +18166,13 @@ Stage3_merge_local (T old_left, T old_right,
 				      old_right->genestrand,old_right->sensedir,genome,genomealt,pairpool,queryseq,
 				     /*query_subseq_offset*/Sequence_subseq_offset(queryseq),
 				      old_right->chrnum,old_right->chroffset,old_right->chrhigh,old_right->chrlength);
+
+    if (new_left == NULL || new_right == NULL) {
+      /* Stage3_new returns NULL if it cannot compute a valid cigar */
+      Stage3_free(&new_left);
+      Stage3_free(&new_right);
+      return (T) NULL;
+    }
 
     new_left->pairs = List_reverse(path);
     new_right->pairs = right_pairs;
