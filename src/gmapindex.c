@@ -1896,18 +1896,9 @@ main (int argc, char *argv[]) {
     FREE(chromosomefile);
 
     if (pure_minimizer_stats_m > 0) {
-      if (argc == 0) {
-	fprintf(stderr,"Pure minimizer stats require a seekable genomecomp file argument\n");
-	exit(9);
-      } else {
-	Indexdb_write_pure_minimizer_stats(destdir,fp,chromosome_iit,
-					   index1part,index1interval,pure_minimizer_stats_m,
-					   genome_lc_p,fileroot,mask_lowercase_p);
-	if (fseek(fp,0L,SEEK_SET) != 0) {
-	  perror("Cannot rewind genomecomp file after writing pure minimizer stats");
-	  exit(9);
-	}
-      }
+      /* Indexdb_write_pure_minimizer_stats was removed (#if 0 in indexdb-write.c) */
+      fprintf(stderr,"Pure minimizer stats (-y) are no longer supported\n");
+      exit(9);
     }
 
     if (msize == 0) {

@@ -1,0 +1,38 @@
+#! @SHELL@
+
+# Regression test: gmap segfaulted in Stage3_merge_local when
+# Stage3_new_from_pairs returned NULL for one half of a readthrough merge.
+# Trigger: a 290-bp Trinity contig with a 93-bp tandem repeat
+# (ss.tandem_repeat) against a 4,360-bp Neurospora crassa slice (ss.ncslice).
+# Stage3_new first prints "Could not compute a valid cigar" and returns NULL.
+#
+# Runs under "make check".  To run by hand after configure:
+#   cd tests && top_builddir=.. ./merge_local_null.test
+# GMAP and GMAP_BUILD override the binaries to test.
+
+if test -z "$srcdir"; then
+  srcdir=.
+fi
+. ${srcdir}/defs
+
+GMAP=${GMAP-${top_builddir}/src/gmap}
+GMAP_BUILD=${GMAP_BUILD-"${top_builddir}/util/gmap_build -B ${top_builddir}/src"}
+
+rm -rf ncslice
+${GMAP_BUILD} -D . -d ncslice ${srcdir}/ss.ncslice > /dev/null 2>&1 || {
+    echo "gmap_build failed" >& 2
+    exit 1
+}
+
+# Same options PASA uses (process_GMAP_alignments_gff3_chimeras_ok.pl)
+${GMAP} -D . -d ncslice -f 3 -n 0 -x 50 -t 1 -B 5 --intronlength=3000 \
+    ${srcdir}/ss.tandem_repeat > merge_local_null.test.out 2> merge_local_null.test.err
+status=$?
+
+if test $status -ne 0; then
+    echo "gmap exited with status $status (expected 0)" >& 2
+    tail -5 merge_local_null.test.err >& 2
+    exit 1
+fi
+
+exit 0

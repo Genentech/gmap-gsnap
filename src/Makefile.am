@@ -2,7 +2,7 @@
 # Copied from ../util so "gmap_setup -B src" works during "make check"
 CLEANFILES = fa_coords gmap_process
 
-EXTRA_DIST = simde
+EXTRA_DIST = simde debug_groups.h
 
 # Include master.c and master.h, so they get included in distribution
 # EXTRA_DIST = mpidebug.c mpidebug.h master.c master.h
